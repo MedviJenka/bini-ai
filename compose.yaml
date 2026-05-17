@@ -1,0 +1,64 @@
+name: bini_dev
+
+services:
+
+  bini_service:
+    container_name: bini_service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bini_service
+    ports:
+      - "9999:8081"
+    env_file:
+      - .env
+    environment:
+      LOG_DIR: /app/logs
+      LOG_LEVEL: DEBUG
+    volumes:
+      - ./output:/app/output
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    labels:
+      app: bini
+      component: api
+      env: production
+
+#  frontend_service:
+#    container_name: frontend_service
+#    build:
+#      context: .
+#      dockerfile: dev.Dockerfile
+#      target: frontend_service
+#    ports:
+#      - "9003:9003"
+#    volumes:
+#      - ./frontend/app:/app
+#      - /app/node_modules
+#    environment:
+#      - REACT_APP_SYSTEM_SERVICE=http://10.8.2.35:9001
+#      - REACT_APP_BINI_SERVICE=http://10.8.2.35:9002
+#    restart: unless-stopped
+#    networks:
+#      - app-network
+#    healthcheck:
+#      test: ["CMD", "curl", "-f" , "http://localhost:9003"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  shared:
+  jenkins:

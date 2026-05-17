@@ -1,0 +1,26 @@
+# Python
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+*.egg-info
+
+# IDE
+.idea
+.vscode
+*.swp
+
+# Git
+.git
+.gitignore
+
+# Logs
+logs
+*.log
+
+# Tests
+.pytest_cache
+htmlcov
+.coverage

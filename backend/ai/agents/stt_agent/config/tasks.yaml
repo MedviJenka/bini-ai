@@ -1,0 +1,6 @@
+audio_task:
+    agent: agent
+    description: |
+        user prompt: {prompt} get the relevant information from the text provided with STT tool {audio_file}
+    expected_output: |
+        The agent should return a text transcription of the audio input, accurately capturing the spoken words and any relevant contextual information.
