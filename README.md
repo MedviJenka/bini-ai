@@ -119,19 +119,11 @@ docker push "biniai.azurecr.io/bini/bini-service:latest"
 
 ### Redeploy Production Stack
 
-SSH into the Ubuntu VM (`10.8.2.35`) and redeploy the Docker Swarm stack:
+On the production VM, redeploy the Docker Swarm stack:
 
 ```bash
-ssh ubuntu@10.8.2.35
 cd Bini
 docker stack deploy -c stack.yaml bini --with-registry-auth
-```
-
-**Check running services:**
-```bash
-docker stack ls
-docker service ls
-docker ps
 ```
 
 Production runs 3 replicas with rolling updates on an overlay network. A separate monitoring stack (`deploy.monitoring.yaml`) exposes Prometheus metrics.
