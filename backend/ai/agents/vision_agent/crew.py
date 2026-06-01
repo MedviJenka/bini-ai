@@ -34,3 +34,9 @@ def vision_agent(prompt: str, image_path: str, sample_image: Optional[Union[list
     cv = ComputerVisionAgent()
     response = cv.crew().kickoff({"prompt": prompt, "image": image_path, "sample_image": sample_image})
     return response.pydantic.model_dump()
+
+
+if __name__ == '__main__':
+    a = vision_agent(prompt='is playwrite displayed', image_path=r'C:\Users\medvi\OneDrive\Desktop\bini-ai\data\images\main.png')
+    import json
+    print(json.dumps(a, indent=4))

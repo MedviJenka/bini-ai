@@ -1,3 +1,4 @@
 from backend.ai.mcp.vision_mcp import mcp
 
-mcp.run(transport="streamable-http", host="0.0.0.0", port=8082)
+if __name__ == '__main__':
+    mcp.run(transport='http', host='127.0.0.1', port=8082)
