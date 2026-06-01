@@ -15,7 +15,7 @@ class ComparisonFinding(BaseModel):
     difference_details:          str  = Field(..., description="Description of the discrepancy found")
 
 
-class ImageAnalysisReport(BaseModel):
+class VisionSchema(BaseModel):
     main_image_attributes:   List[VisualAttribute]                 = Field(..., description="List of all detected visual elements and their properties for the main image")
     sample_image_attributes: Optional[List[List[VisualAttribute]]] = Field(default=None, description="Per-sample lists of detected visual elements and their properties")
     reference_comparison:    List[ComparisonFinding]               = Field(..., description="Comparison results if a sample image was provided")

@@ -1,5 +1,3 @@
-import os
-from dotenv import load_dotenv
 from dataclasses import dataclass
 from functools import cached_property
 from crewai import LLM
@@ -8,22 +6,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from backend.paths import ROOT_DIR
 
 
-load_dotenv()
-
-
 class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    API_VERSION:       str = os.getenv("API_VERSION", "v1")
-    ENV:               str = os.getenv("ENV", "development")
-    HOST:              str = "0.0.0.0"
-    PORT:              int = os.getenv("PORT")
-    LOG_DIR:           str = str(ROOT_DIR / "logs")
-    LOG_LEVEL:         str = "DEBUG"
-    AZURE_API_KEY:     str = os.getenv("AZURE_API_KEY")
-    AZURE_ENDPOINT:    str = os.getenv("AZURE_ENDPOINT")
-    AZURE_API_VERSION: str = os.getenv("AZURE_API_VERSION")
+    API_VERSION:       str = Field(default="v1")
+    ENV:               str = Field(default='dev')
+    HOST:              str = Field(default='0.0.0.0')
+    PORT:              int = Field(...)
+    LOG_DIR:           str = Field(default=str(ROOT_DIR / "logs"))
+    LOG_LEVEL:         str = Field(default='DEBUG')
+    ANTHROPIC_API_KEY: str = Field(...)
 
     class Paths:
         LOGS = str(ROOT_DIR / "logs")
