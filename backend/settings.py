@@ -43,14 +43,7 @@ class LLMFactory:
 
     @cached_property
     def llm(self) -> LLM:
-        """Initiates openai with azure"""
-
-        return LLM(
-            model="azure/gpt-5.4-mini",
-            api_key=Config.AZURE_API_KEY,
-            endpoint=Config.AZURE_ENDPOINT,
-            api_version=Config.AZURE_API_VERSION,
-        )
+        return LLM(model="anthropic/claude-sonnet-4-6", api_key=Config.ANTHROPIC_API_KEY)
 
 
 TestConfig = TestSettings()

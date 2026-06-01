@@ -63,5 +63,8 @@ CMD ["uv", "run", "uvicorn", "services.bini:app", "--host", "0.0.0.0", "--port",
 FROM build AS rc
 CMD ["uv", "run", "uvicorn", "services.bini:app", "--host", "0.0.0.0", "--port", "8082", "--workers", "4"]
 
+FROM build AS mcp_service
+CMD ["uv", "run", "python", "-m", "services.mcp_server"]
+
 #FROM build AS system_service
 #CMD ["uv", "run", "uvicorn", "services.system:app", "--host", "0.0.0.0", "--port", "8082"]
