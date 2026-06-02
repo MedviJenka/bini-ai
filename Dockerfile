@@ -34,4 +34,4 @@ COPY . .
 # ----------------------- #
 
 FROM build AS mcp_service
-CMD ["uv", "run", "python", "-m", "services.mcp_server"]
+CMD ["uv", "run", "fastmcp", "run", "services/mcp_server.py:mcp", "--transport", "http", "--host", "0.0.0.0", "--port", "8082"]
