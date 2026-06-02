@@ -4,9 +4,12 @@ import tempfile
 from typing import Optional
 from fastmcp import FastMCP
 from backend.ai.agents.vision_agent.crew import vision_agent
+from backend.utils.logger import Logger
 
 
-mcp = FastMCP("vision-mcp")
+log = Logger(name='logfire-mcp')
+
+mcp = FastMCP(name="Bini Vision")
 
 
 def _b64_to_tempfile(b64: str, suffix: str = ".jpg") -> str:

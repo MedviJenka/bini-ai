@@ -8,7 +8,7 @@ from backend.paths import ROOT_DIR
 
 class Settings(BaseSettings):
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file="../.env", extra="ignore")
 
     API_VERSION:       str = Field(default="v1")
     ENV:               str = Field(default='dev')
@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     LOG_DIR:           str = Field(default=str(ROOT_DIR / "logs"))
     LOG_LEVEL:         str = Field(default='DEBUG')
     ANTHROPIC_API_KEY: str = Field(...)
+    LOGFIRE_TOKEN:     str = Field(...)
 
     class Paths:
         LOGS = str(ROOT_DIR / "logs")

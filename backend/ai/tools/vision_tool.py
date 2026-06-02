@@ -7,10 +7,10 @@ from PIL import Image
 from crewai import LLM
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field, field_validator
-from backend.utils.logger import Logfire
+from backend.utils.logger import Logger
 
 
-log = Logfire(name="BiniVisionTool")
+log = Logger(name="BiniVisionTool")
 
 MAX_IMAGE_RESOLUTION = 2048
 
