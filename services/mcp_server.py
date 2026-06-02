@@ -1,4 +1,4 @@
 from backend.ai.mcp.vision_mcp import mcp
 
 if __name__ == '__main__':
-    mcp.run()
+    mcp.run(transport='http', port=8082)

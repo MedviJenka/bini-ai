@@ -1,6 +1,5 @@
 ARG VERSION=3.12-slim
 
-
 # ----------------------- #
 #         Builder         #
 # ----------------------- #
@@ -31,40 +30,8 @@ COPY . .
 
 
 # ----------------------- #
-#    Frontend Builder     #
+#       Run MVP           #
 # ----------------------- #
-FROM node:20-alpine AS frontend_base
-
-WORKDIR /app
-
-ARG REACT_APP_SYSTEM_SERVICE
-ARG REACT_APP_BINI_SERVICE
-
-ENV REACT_APP_SYSTEM_SERVICE=${REACT_APP_SYSTEM_SERVICE}
-ENV REACT_APP_BINI_SERVICE=${REACT_APP_BINI_SERVICE}
-
-COPY frontend/app/package*.json ./
-RUN npm install
-
-COPY frontend/app ./
-RUN npm run build
-
-# ----------------------- #
-#       Run Service       #
-# ----------------------- #
-
-#FROM node:20-alpine AS frontend_service
-#COPY --from=frontend_base /app ./
-#CMD ["npm", "start", "--port", "3000"]
-
-FROM build AS bini_service
-CMD ["uv", "run", "uvicorn", "services.bini:app", "--host", "0.0.0.0", "--port", "8081", "--workers", "4"]
-
-FROM build AS rc
-CMD ["uv", "run", "uvicorn", "services.bini:app", "--host", "0.0.0.0", "--port", "8082", "--workers", "4"]
 
 FROM build AS mcp_service
 CMD ["uv", "run", "python", "-m", "services.mcp_server"]
-
-#FROM build AS system_service
-#CMD ["uv", "run", "uvicorn", "services.system:app", "--host", "0.0.0.0", "--port", "8082"]
