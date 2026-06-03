@@ -2,6 +2,29 @@ name: bini_mcp
 
 services:
 
+  mcp_dashboard:
+    container_name: mcp_dashboard
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dashboard
+    ports:
+      - "6274:6274"
+      - "6277:6277"
+#    depends_on:
+#      mcp_service:
+#        condition: service_healthy
+    networks:
+      - mcp-network
+    restart: unless-stopped
+#    healthcheck:
+#      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:6274', r => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))\""]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 60s
+
+
   mcp_service:
     container_name: mcp_service
     build:
@@ -33,4 +56,4 @@ services:
 
 networks:
   mcp-network:
-    driver: bridge
+#    driver: bridge
