@@ -19,8 +19,8 @@ def _b64_to_tempfile(b64: str, suffix: str = ".jpg") -> str:
         return f.name
 
 
-@mcp.tool()
-def analyze_image(prompt: str, image: str, sample_images: Optional[list[str]] = None) -> dict:
+@mcp.tool(name='Vision')
+def vision(prompt: str, image: str, sample_images: Optional[list[str]] = None) -> dict:
 
     """Analyze an image using the Bini vision agent.[Vision MCP]"""
 
@@ -46,4 +46,4 @@ def analyze_image(prompt: str, image: str, sample_images: Optional[list[str]] = 
 
 if __name__ == '__main__':
     import asyncio
-    asyncio.run(mcp.run_async())
+    mcp.run_async(transport='sse')
