@@ -11,8 +11,7 @@ services:
     env_file:
       - .env
     environment:
-      CLIENT_HOST: "0.0.0.0"
-      SERVER_HOST: "0.0.0.0"
+      HOST: "0.0.0.0"
     ports:
       - "6274:6274"
       - "6277:6277"
