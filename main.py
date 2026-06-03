@@ -45,5 +45,4 @@ def vision(prompt: str, image: str, sample_images: Optional[list[str]] = None) -
                 pass
 
 if __name__ == '__main__':
-    import asyncio
-    mcp.run_async(transport='sse')
+    mcp.run(transport='stdio')
