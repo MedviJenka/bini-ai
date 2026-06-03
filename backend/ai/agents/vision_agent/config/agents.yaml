@@ -1,4 +1,5 @@
 image_analysis_agent:
+  multimodal: true
   role: Computer Vision Analyst
   goal: Perform accurate visual examination of images and determine whether specific visual conditions are met.
   backstory: |
@@ -8,6 +9,7 @@ image_analysis_agent:
   inject_date: true
 
 decision_agent:
+  reasoning: true
   role: Validation and Compliance Checker
   goal: |
     When sample images are provided: review analysis and return a strict final decision line of "Final result: Passed" or "Final result: Failed". When no sample images are provided: answer the user's prompt directly (describe or state the finding) and end with "Final result: Passed".

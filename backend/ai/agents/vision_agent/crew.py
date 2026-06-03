@@ -27,7 +27,7 @@ class ComputerVisionAgent(AgentInfrastructure):
 
     @crew
     def crew(self) -> Crew:
-        return Crew(agents=self.agents, tasks=self.tasks, verbose=True)
+        return Crew(agents=self.agents, tasks=self.tasks, verbose=True, )
 
 
 def vision_agent(prompt: str, image_path: str, sample_image: Optional[Union[list, str]] = None) -> dict:
