@@ -1,9 +1,8 @@
 {
-    "mcpServers": {
-        "default-server": {
-            "type": "streamable-http",
-            "url": "http://mcp_service:6000/mcp",
-            "note": "For Streamable HTTP connections, add this URL directly in your MCP Client"
-        }
+  "mcpServers": {
+    "bini-vision": {
+      "command": "uv",
+      "args": ["run", "python", "main.py"]
     }
+  }
 }
