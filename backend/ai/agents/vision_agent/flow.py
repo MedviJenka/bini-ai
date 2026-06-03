@@ -1,8 +1,15 @@
 from backend.ai.agents.vision_agent.crew import vision_agent
-from pathlib import Path
 from pydantic import BaseModel, Field
 from crewai.flow import Flow, listen, start, router
 from typing import Optional, Union
+from backend.utils.logger import Logger
+
+
+log = Logger(name="VisionFlow")
+
+MAX_RETRIES = 3
+
+MIN_CONFIDENCE = 95
 
 
 class ContentState(BaseModel):
@@ -10,6 +17,8 @@ class ContentState(BaseModel):
     image_path:   str                        = ''
     sample_image: Optional[Union[list, str]] = Field(default_factory=list)
     cache:        dict                       = {}
+    retries:      int                        = 0
+
 
 class VisionFlow(Flow[ContentState]):
 
@@ -19,34 +28,40 @@ class VisionFlow(Flow[ContentState]):
         return self.state.cache
 
     @router(run_vision_agent)
-    def decision_point_1(self) -> str:
-        return 'Success' if self.state.cache['final_decision']['confidence_level'] > 100 else 'Fail'
+    def evaluate_confidence(self) -> str:
+        confidence = self.state.cache["final_decision"]["confidence_level"]
+        if confidence >= MIN_CONFIDENCE:
+            return "Success"
+        if self.state.retries >= MAX_RETRIES:
+            log.fire.warning(f"Max retries ({MAX_RETRIES}) reached at confidence {confidence}")
+            return "Success"
+        return "Retry"
 
-    @listen('Proceed')
-    def on_success(self) -> None:
-        import json
-        print(json.dumps(self.state.cache, indent=4))
+    @listen("Success")
+    def on_success(self) -> dict:
+        return self.state.cache
 
-    @listen('Fail')
-    def on_fail(self):
-        print(f'agent confidence level is {self.state.cache['final_decision']['confidence_level']}, re running')
-        return 'Fail'
+    @listen("Retry")
+    def on_retry(self) -> dict:
+        self.state.retries += 1
+        confidence = self.state.cache["final_decision"]["confidence_level"]
+        log.fire.info(f"Confidence {confidence} below {MIN_CONFIDENCE}, retry {self.state.retries}/{MAX_RETRIES}")
+        self.state.cache = vision_agent(
+            prompt=self.state.prompt,
+            image_path=self.state.image_path,
+            sample_image=self.state.sample_image,
+        )
+        return self.state.cache
 
-    @router(on_fail)
-    def decision_point_2(self) -> None:
-        self.run_vision_agent()
-
-    # @listeen('Proceed')
-    # def save_content(self):
-    #     print("Saving content")
-    #     output_dir = Path("output")
-    #     output_dir.mkdir(exist_ok=True)
-    #     with open(output_dir / "post.md", "w") as f:
-    #         f.write(f'{self.state.cache}')
-    #     print("Post saved to output/post.md")
+    @router(on_retry)
+    def evaluate_retry(self) -> str:
+        return self.evaluate_confidence()
 
 
 if __name__ == '__main__':
-    a = VisionFlow().kickoff(inputs={'prompt': 'is playwright displayed', 'image_path': r'/Users/medvijenia/dev/bini-ai/data/images/main.png'})
     import json
-    print(json.dumps(a, indent=4))
+    result = VisionFlow().kickoff(inputs={
+        'prompt': 'is playwright displayed',
+        'image_path': r'/Users/medvijenia/dev/bini-ai/data/images/main.png',
+    })
+    print(json.dumps(result, indent=4))
