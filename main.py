@@ -19,4 +19,4 @@ def vision(prompt: str, image_path: str, sample_images: Optional[list[str]] = No
     return vision_agent(prompt=prompt, image_path=image_path, sample_image=sample_images)
 
 if __name__ == '__main__':
-    mcp.run(transport='stdio')
+    mcp.run(transport='streamable-http', host='0.0.0.0', port=6000)
