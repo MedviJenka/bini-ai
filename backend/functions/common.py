@@ -1,11 +1,11 @@
 import asyncio
 from fastmcp import Client
-from typing import Optional
+from typing import Optional, Union
 
 
-async def call_vision_mcp(prompt: str, image_path: str, sample_image: Optional[str] = None):
+async def call_vision_mcp(prompt: str, image_path: str, sample_images: Optional[Union[str, list]] = None):
     async with Client("http://localhost:6000/mcp") as client:
-        result = await client.call_tool("Bini Vision", {'prompt': prompt, 'image_path': image_path, 'sample_image': sample_image})
+        result = await client.call_tool("Vision", {'prompt': prompt, 'image_path': image_path, 'sample_images': sample_images})
         print(result)
 
 
