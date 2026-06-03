@@ -78,7 +78,7 @@ def encode_image(path: str) -> str:
 
 class ImagePromptSchema(BaseModel):
 
-    image:        str                             = Field(...,          description="Primary image path")
+    image_path:        str                        = Field(...,          description="Primary image path")
     sample_image: Optional[Union[str, List[str]]] = Field(default=None, description="Optional comparison image path(s)")
     prompt:       str                             = Field(...,          description="Prompt describing what to analyze in the image")
 
@@ -94,7 +94,7 @@ class ImagePromptSchema(BaseModel):
 
     def get_all_images(self) -> List[str]:
         """Return all image paths used in the request."""
-        images = [self.image]
+        images = [self.image_path]
 
         if self.sample_image:
             images.extend(self.sample_image)

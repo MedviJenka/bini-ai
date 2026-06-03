@@ -20,5 +20,5 @@ dependencies = [
     "pydantic",
     "aiohttp",
     "aiofiles",
-    "logfire"
+    "logfire",
 ]
