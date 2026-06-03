@@ -24,4 +24,5 @@ CMD ["uv", "run", "fastmcp", "run", "main.py:mcp", "--transport", "streamable-ht
 
 FROM node:lts-slim AS dashboard
 RUN npm install -g @modelcontextprotocol/inspector
-CMD ["npx", "@modelcontextprotocol/inspector", "python", "main.py"]
+EXPOSE 6274 6277
+CMD ["npx", "@modelcontextprotocol/inspector"]

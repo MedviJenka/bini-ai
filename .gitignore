@@ -79,6 +79,7 @@ logs/
 # Output files
 output/
 *.json
+!.mcp.json
 temp_*
 
 /frontend/app/node_modules/*

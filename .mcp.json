@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "bini-vision": {
+      "command": "uv",
+      "args": ["run", "python", "main.py"]
+    }
+  }
+}
