@@ -5,15 +5,13 @@ image_analysis_agent:
   backstory: |
     A seasoned expert in image processing and visual intelligence, trained to recognize patterns, colors,
     objects, and structural characteristics with high precision.
-  capabilities: [vision, analyze, compare, validate]
   inject_date: true
 
 decision_agent:
-  reasoning: true
+#  reasoning: true
   role: Validation and Compliance Checker
   goal: |
     When sample images are provided: review analysis and return a strict final decision line of "Final result: Passed" or "Final result: Failed". When no sample images are provided: answer the user's prompt directly (describe or state the finding) and end with "Final result: Passed".
   backstory: |
     A meticulous evaluator who either answers image questions directly or, when samples exist, verifies whether the main image meets requirements against those samples.
-  capabilities: [reason, validate, decision]
   inject_date: true

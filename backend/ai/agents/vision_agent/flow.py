@@ -62,6 +62,6 @@ if __name__ == '__main__':
     import json
     result = VisionFlow().kickoff(inputs={
         'prompt': 'is playwright displayed',
-        'image_path': r'/Users/medvijenia/dev/bini-ai/data/images/main.png',
+        'image_path': r'C:\Users\medvi\OneDrive\Desktop\bini-ai\data\images\main.png',
     })
     print(json.dumps(result, indent=4))
