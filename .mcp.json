@@ -1,8 +1,13 @@
 {
   "mcpServers": {
     "bini-vision": {
-      "command": "uv",
-      "args": ["run", "python", "main.py"]
+      "type": "http",
+      "url": "http://localhost:6000/mcp"
+    },
+    "docker": {
+      "type": "stdio",
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "mcp/docker"]
     }
   }
 }
