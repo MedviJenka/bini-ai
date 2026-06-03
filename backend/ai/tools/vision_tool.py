@@ -82,10 +82,12 @@ class ImagePromptSchema(BaseModel):
     sample_image: Optional[Union[str, List[str]]] = Field(default=None, description="Optional comparison image path(s)")
     prompt:       str                             = Field(...,          description="Prompt describing what to analyze in the image")
 
+    @classmethod
     @field_validator("image")
     def validate_image(cls, v: str) -> str:
         return resolve_path(v)
 
+    @classmethod
     @field_validator("sample_image")
     def validate_sample_images(cls, v):
         return normalize_paths(v)

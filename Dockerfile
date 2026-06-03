@@ -20,7 +20,7 @@ COPY . .
 # ----------------------- #
 
 FROM build AS mcp_service
-CMD ["uv", "run", "fastmcp", "run", "main.py:mcp", "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8082"]
+CMD ["uv", "run", "fastmcp", "run", "main.py:mcp", "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "6000"]
 
 FROM node:lts-slim AS dashboard
 RUN npm install -g @modelcontextprotocol/inspector
