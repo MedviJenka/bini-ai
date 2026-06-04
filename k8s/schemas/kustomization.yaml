@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - bini.yaml
+  - ingress.yaml
+  - hpa.yaml
+  - pdb.yaml
+  - network-policy.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+
+labels:
+  - pairs:
+      app: bini
+      managed-by: kustomize
+    includeSelectors: false
+    includeTemplates: true

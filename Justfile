@@ -13,7 +13,7 @@ registry := "ghcr.io/medvijenka/bini"
 build service tag="dev":
   docker buildx build --file Dockerfile --target {{service}} --tag {{registry}}/{{service}}:{{tag}} --push .
 
-mcp:
+bini:
     just build bini_service
 
 list:

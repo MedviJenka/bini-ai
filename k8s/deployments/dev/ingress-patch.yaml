@@ -1,0 +1,16 @@
+# Dev overlay: open CORS to any origin, remove host restriction so any IP works locally.
+- op: replace
+  path: /metadata/annotations/nginx.ingress.kubernetes.io~1cors-allow-origin
+  value: "*"
+- op: replace
+  path: /spec/rules
+  value:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bini-service
+                port:
+                  number: 6000

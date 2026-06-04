@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# The CRD below is cluster-scoped — kubectl apply installs it before any ServiceMonitor
+# instances regardless of overlay namespace. Safe to include in both dev and prod overlays.
+
+resources:
+  - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.80.1/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
+  - servicemonitors.yaml

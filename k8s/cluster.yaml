@@ -1,0 +1,53 @@
+﻿# eksctl cluster config for bini
+#
+# Creates the EKS cluster, VPC, subnets, node group, and IAM roles in one command:
+#   eksctl create cluster -f k8s/cluster.yaml
+#
+# Destroys everything (cluster + VPC + IAM):
+#   eksctl delete cluster -f k8s/cluster.yaml
+#
+# Working directory: bini-main/backend/
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: bini-eks
+  region: il-central-1
+  version: "1.35"
+  tags:
+    project: bini
+    managed-by: eksctl
+
+# eksctl creates a new VPC with 3 public + 3 private subnets.
+# Public subnets are automatically tagged kubernetes.io/role/elb=1
+# so the nginx NLB can be provisioned without manual subnet tagging.
+vpc:
+  nat:
+    gateway: Single   # one NAT gateway — enough for non-HA, saves ~$30/mo vs HighlyAvailable
+
+managedNodeGroups:
+  - name: bini-nodes
+    instanceType: t3.large    # 2 vCPU / 8 GB — headroom for 10 services + CrewAI startup
+    desiredCapacity: 2
+    minSize: 0                 # scale to 0 when not needed (stops EC2 cost)
+    maxSize: 3
+    amiFamily: AmazonLinux2023
+    labels:
+      role: worker
+    tags:
+      k8s.io/cluster-autoscaler/enabled: "true"
+      k8s.io/cluster-autoscaler/bini: owned
+    iam:
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        # Required for nginx ingress controller to provision the NLB.
+        # Without this the Service stays <pending> indefinitely.
+        - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
+
+addons:
+  - name: vpc-cni
+  - name: coredns
+  - name: kube-proxy
