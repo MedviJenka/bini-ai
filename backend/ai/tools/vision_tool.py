@@ -21,6 +21,11 @@ LLMMessage = dict[str, Any]
 #        Utility Functions       #
 # ------------------------------ #
 
+def is_base64(value: str) -> bool:
+    """Return True if value is raw base64 or a data URI, not a file path."""
+    return value.startswith("data:image/") or not Path(value).exists()
+
+
 def resolve_path(path: str) -> str:
     """Resolve and validate file path."""
     resolved = Path(path).resolve()
@@ -31,45 +36,44 @@ def resolve_path(path: str) -> str:
 
 
 def normalize_paths(value: Optional[Union[str, List[str]]]) -> Optional[List[str]]:
-    """Normalize optional image paths to list."""
+    """Normalize optional image paths/base64 values to list."""
     if value is None:
         return None
-
     paths = [value] if isinstance(value, str) else value
-
     for p in paths:
-        resolve_path(p)
-
+        if not is_base64(p):
+            resolve_path(p)
     return paths
 
 
-def resize_image(path: str) -> bytes:
-    """Resize image safely for vision models."""
-    try:
-        img = Image.open(path)
-    except Exception as e:
-        raise ValueError(f"Cannot open image '{path}': {e}") from e
+def _pil_to_jpeg_b64(img: "Image.Image") -> str:
+    if img.mode in ("RGBA", "LA", "P"):
+        img = img.convert("RGB")
+    if max(img.size) > MAX_IMAGE_RESOLUTION:
+        img.thumbnail((MAX_IMAGE_RESOLUTION, MAX_IMAGE_RESOLUTION), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=95, subsampling=0)
+    return f"data:image/jpeg;base64,{base64.b64encode(buf.getvalue()).decode()}"
+
+
+def encode_image(path_or_b64: str) -> str:
+    """Encode image as base64 data URI. Accepts a file path, raw base64, or data URI."""
+    if path_or_b64.startswith("data:image/"):
+        raw = base64.b64decode(path_or_b64.split(",", 1)[1])
+    elif is_base64(path_or_b64):
+        raw = base64.b64decode(path_or_b64)
+    else:
+        try:
+            img = Image.open(resolve_path(path_or_b64))
+            return _pil_to_jpeg_b64(img)
+        except Exception as e:
+            raise ValueError(f"Cannot open image '{path_or_b64}': {e}") from e
 
     try:
-        # Convert RGBA / P / LA to RGB
-        if img.mode in ("RGBA", "LA", "P"):
-            img = img.convert("RGB")
-
-        if max(img.size) > MAX_IMAGE_RESOLUTION:
-            img.thumbnail((MAX_IMAGE_RESOLUTION, MAX_IMAGE_RESOLUTION), Image.LANCZOS)
-
-        buffer = io.BytesIO()
-        img.save(buffer, format="JPEG", quality=95, subsampling=0)
-        return buffer.getvalue()
+        img = Image.open(io.BytesIO(raw))
+        return _pil_to_jpeg_b64(img)
     except Exception as e:
-        raise ValueError(f"Failed to process image '{path}': {e}") from e
-
-
-def encode_image(path: str) -> str:
-    """Encode image as base64 data URI. Always JPEG after resize_image()."""
-    image_bytes = resize_image(path)
-    encoded = base64.b64encode(image_bytes).decode("utf-8")
-    return f"data:image/jpeg;base64,{encoded}"
+        raise ValueError(f"Failed to process image data: {e}") from e
 
 
 # ------------------------------ #
@@ -83,9 +87,9 @@ class ImagePromptSchema(BaseModel):
     prompt:       str                             = Field(...,          description="Prompt describing what to analyze in the image")
 
     @classmethod
-    @field_validator("image")
+    @field_validator("image_path")
     def validate_image(cls, v: str) -> str:
-        return resolve_path(v)
+        return v if is_base64(v) else resolve_path(v)
 
     @classmethod
     @field_validator("sample_image")

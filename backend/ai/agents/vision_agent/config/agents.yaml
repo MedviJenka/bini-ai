@@ -1,5 +1,6 @@
 image_analysis_agent:
   multimodal: true
+  max_execution_time: 180
   role: Computer Vision Analyst
   goal: Perform accurate visual examination of images and determine whether specific visual conditions are met.
   backstory: |
@@ -9,9 +10,13 @@ image_analysis_agent:
 
 decision_agent:
 #  reasoning: true
+  max_execution_time: 180
   role: Validation and Compliance Checker
   goal: |
-    When sample images are provided: review analysis and return a strict final decision line of "Final result: Passed" or "Final result: Failed". When no sample images are provided: answer the user's prompt directly (describe or state the finding) and end with "Final result: Passed".
+    When sample images are provided: review analysis and return a strict final decision line of 
+    "Final result: Passed" or "Final result: Failed". When no sample images are provided: answer 
+    the user's prompt directly (describe or state the finding) and end with "Final result: Passed".
   backstory: |
-    A meticulous evaluator who either answers image questions directly or, when samples exist, verifies whether the main image meets requirements against those samples.
+    A meticulous evaluator who either answers image questions directly or, 
+    when samples exist, verifies whether the main image meets requirements against those samples.
   inject_date: true

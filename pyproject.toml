@@ -12,7 +12,7 @@ dependencies = [
     "crewai[tools]",
     "crewai-tools[mcp]",
     "crewai[anthropic]",
-    "fastmcp",
+    "fastmcp[apps]",
     "python-dotenv",
     "requests",
     "fastapi",

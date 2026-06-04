@@ -19,9 +19,9 @@ COPY . .
 #       Run MVP           #
 # ----------------------- #
 
-FROM build AS mcp_service
+FROM build AS bini_service
 CMD ["uv", "run", "fastmcp", "run", "main.py:mcp", "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "6000"]
 
 FROM node:lts-slim AS dashboard
 RUN npm install -g @modelcontextprotocol/inspector
-CMD ["npx", "@modelcontextprotocol/inspector", "--server-url", "http://mcp_service:6000/mcp", "--transport", "streamable-http"]
+CMD ["npx", "@modelcontextprotocol/inspector", "--server-url", "http://bini_service:6000/mcp", "--transport", "streamable-http"]

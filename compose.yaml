@@ -29,12 +29,12 @@ services:
       start_period: 60s
 
 
-  mcp_service:
-    container_name: mcp_service
+  bini_service:
+    container_name: bini_service
     build:
       context: .
       dockerfile: Dockerfile
-      target: mcp_service
+      target: bini_service
     ports:
       - "6000:6000"
     env_file:
