@@ -41,6 +41,11 @@ class BiniMCPClient:
         self._session_id = response.headers.get("Mcp-Session-Id")
         log.fire.info("MCP session established", session_id=self._session_id)
 
+    def verify(self, prompt: str, image_path: str, sample_images: Optional[list[str]] = None) -> str:
+        """Returns 'Passed' or 'Failed' — for direct use in test assertions."""
+        result = self.analyze_image(prompt=prompt, image_path=image_path, sample_images=sample_images)
+        return result["final_decision"]["status"]
+
     def analyze_image(self, prompt: str, image_path: str, sample_images: Optional[list[str]] = None) -> dict:
         if not self._session_id:
             self.connect()
