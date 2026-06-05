@@ -16,7 +16,9 @@ validate_requirements:
   agent: decision_agent
   context: [extract_visual_data]
   description: |
-    Prompt: {prompt}. Main image: {image}. Sample image(s): {sample_image}.
+    Prompt: {prompt}
+    Main image: {image}
+    Sample image(s): {sample_image}
     CRITICAL: If sample_image is empty (e.g. [] or none), you are NOT validating. Do NOT output "Failed" or "Final result: Failed". Generic questions (e.g. "what is displayed?", "is this X or Y?") with no sample images must be answered directly and end with "Final result: Passed".
     **No sample images (empty list or none):**
     Answer the prompt in plain language: describe the image or give a direct factual answer. Do not validate. Do not output "Failed". Keep the explanation brief. End your response with exactly one final line: "Final result: Passed"

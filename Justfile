@@ -14,7 +14,10 @@ build service tag="dev":
   docker buildx build --file Dockerfile --target {{service}} --tag {{registry}}/{{service}}:{{tag}} --push .
 
 bini:
-    just build bini_service
+    just build mcp_service
+
+api:
+    just build api_service
 
 list:
     @just --list
