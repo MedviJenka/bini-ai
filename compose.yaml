@@ -29,12 +29,12 @@ services:
       start_period: 60s
 
 
-  bini_service:
-    container_name: bini_service
+  mcp_service:
+    container_name: mcp_service
     build:
       context: .
       dockerfile: Dockerfile
-      target: bini_service
+      target: mcp_service
     ports:
       - "6000:6000"
     env_file:
@@ -50,6 +50,29 @@ services:
     labels:
       app: bini
       component: mcp
+      env: development
+
+  api_service:
+    container_name: api_service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api_service
+    ports:
+      - "7000:7000"
+    env_file:
+      - .env
+    environment:
+      LOG_DIR: /app/logs
+      LOG_LEVEL: DEBUG
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    labels:
+      app: bini
+      component: api
       env: development
 
 networks:

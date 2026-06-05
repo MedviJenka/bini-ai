@@ -25,16 +25,8 @@ def _b64_to_tempfile(b64: str) -> str:
     os.close(fd)
     return path
 
-
-@mcp.tool(name='Vision')
-def vision(prompt: str, image: str, sample_image: Optional[list[str]] = None) -> dict:
-    """
-    [Vision MCP]
-    Analyze an image using the Bini vision agent.
-    image: base64-encoded image bytes (any common format: PNG, JPEG, WebP, etc.)
-    sample_image: optional list of base64-encoded comparison image bytes
-    """
-    tmp = _b64_to_tempfile(image)
+def _run_vision(prompt: str, image_b64: str, sample_image: Optional[list[str]] = None) -> dict:
+    tmp = _b64_to_tempfile(image_b64)
     tmp_samples = [_b64_to_tempfile(s) for s in sample_image] if sample_image else None
     try:
         return vision_agent(prompt=prompt, image_path=tmp, sample_image=tmp_samples)
@@ -42,3 +34,17 @@ def vision(prompt: str, image: str, sample_image: Optional[list[str]] = None) ->
         os.unlink(tmp)
         for s in (tmp_samples or []):
             os.unlink(s)
+
+
+@mcp.tool(name='Vision')
+def vision_mcp(prompt: str, image: str, sample_image: Optional[list[str]] = None) -> dict:
+    """
+    Analyze an image using the Bini vision agent.
+    image: base64-encoded image bytes (any common format: PNG, JPEG, WebP, etc.)
+    sample_image: optional list of base64-encoded comparison image bytes
+    """
+    return _run_vision(prompt, image, sample_image)
+
+
+if __name__ == '__main__':
+    mcp.run_async(transport='http', host='0.0.0.0', port=6000)
