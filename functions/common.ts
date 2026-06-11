@@ -6,7 +6,7 @@ async function callVisionMcp(prompt: string, imagePath: string, sampleImage?: st
 
     const imageBuffer = await readFile(imagePath);
     const imageBase64 = imageBuffer.toString("base64");
-    const transport = new StreamableHTTPClientTransport(new URL("http://localhost:6000/mcp"));
+    const transport = new StreamableHTTPClientTransport(new URL("http://localhost:6001/vision"));
     const client = new Client({name: "vision-client", version: "1.0.0",});
 
     await client.connect(transport);

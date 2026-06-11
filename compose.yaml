@@ -29,6 +29,43 @@ services:
       start_period: 60s
 
 
+  claude_proxy:
+    container_name: claude_proxy
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: claude_proxy
+    ports:
+      - "8787:8787"
+    env_file:
+      - .env
+    volumes:
+      - ~/.claude:/home/proxy/.claude:ro
+    read_only: true
+    tmpfs:
+      - "/tmp:size=100M"
+    security_opt:
+      - "no-new-privileges:true"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2.0'
+          pids: 32
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8787/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      app: bini
+      component: llm-proxy
+      env: development
+
   mcp_service:
     container_name: mcp_service
     build:
@@ -42,6 +79,11 @@ services:
     environment:
       LOG_DIR: /app/logs
       LOG_LEVEL: DEBUG
+      CLAUDE_PROXY_URL: http://claude_proxy:8787/v1
+      MCP_PROXY_AUTH_TOKEN: ${MCP_PROXY_AUTH_TOKEN}
+    depends_on:
+      claude_proxy:
+        condition: service_healthy
     volumes:
       - ./logs:/app/logs
     restart: unless-stopped
@@ -59,12 +101,17 @@ services:
       dockerfile: Dockerfile
       target: api_service
     ports:
-      - "7000:7000"
+      - "6001:6001"
     env_file:
       - .env
     environment:
       LOG_DIR: /app/logs
       LOG_LEVEL: DEBUG
+      CLAUDE_PROXY_URL: http://claude_proxy:8787/v1
+      MCP_PROXY_AUTH_TOKEN: ${MCP_PROXY_AUTH_TOKEN}
+    depends_on:
+      claude_proxy:
+        condition: service_healthy
     volumes:
       - ./logs:/app/logs
     restart: unless-stopped
