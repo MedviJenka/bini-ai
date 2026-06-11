@@ -10,11 +10,12 @@ Security contract:
 
 from __future__ import annotations
 
+import hmac
 import json
 import time
 import uuid
 import asyncio
-from typing import Any, Optional
+from typing import Any
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
@@ -52,15 +53,15 @@ class _Msg(BaseModel):
 
 class _ResponseFormat(BaseModel):
     type: str = "text"
-    json_schema: Optional[dict[str, Any]] = None
+    json_schema: dict[str, Any] | None = None
 
 
 class _Req(BaseModel):
     model: str = "claude-sonnet-4-6"
     messages: list[_Msg] = []
-    temperature: Optional[float] = None
-    max_tokens: Optional[int] = None
-    response_format: Optional[_ResponseFormat] = None
+    temperature: float | None = None
+    max_tokens: int | None = None
+    response_format: _ResponseFormat | None = None
 
 
 # ------------------------------------------------------------------ #
@@ -336,7 +337,7 @@ async def _auth_middleware(request: Request, call_next):  # type: ignore[type-ar
         )
 
     token = auth_header[len("Bearer "):]
-    if not token or token != Config.MCP_PROXY_AUTH_TOKEN:
+    if not token or not hmac.compare_digest(token, Config.MCP_PROXY_AUTH_TOKEN):
         return JSONResponse(
             status_code=401, content={"detail": "Invalid Bearer token"}
         )
