@@ -1,0 +1,45 @@
+extract_visual_data:
+  agent: image_analysis_agent
+  description: |
+    Analyze the main image: {image}.
+    1. Identify all key visual elements mentioned in the prompt: {prompt}.
+    2. If sample image is provided: {sample_image} is provided, perform a side-by-side comparison.
+    3. List specific attributes
+  expected_output: |
+    A structured report containing:
+    - Main Image Attributes: (List of findings)
+    - Reference Comparison: (Differences/Similarities if sample_image exists)
+    - Technical Details: (Dimensions, colors, text found)
+    
+    
+validate_requirements:
+  agent: decision_agent
+  context: [extract_visual_data]
+  description: |
+    Prompt: {prompt}
+    Main image: {image}
+    Sample image(s): {sample_image}
+
+    You are a QA automation agent. Your job is to determine whether the image satisfies the prompt.
+
+    **Decision logic (applies to ALL cases, with or without sample images):**
+    - If the prompt asks whether something IS present (e.g. "is X displayed?") and it IS present → Passed
+    - If the prompt asks whether something IS present and it is NOT present → Failed
+    - If the prompt asks whether something is NOT present and it is NOT present → Passed
+    - If the prompt asks whether something is NOT present and it IS present → Failed
+
+    **No sample images (empty list or none):**
+    Evaluate the prompt against the main image only. Give a brief factual answer, then output your final line based on the decision logic above.
+
+    **Sample images provided (non-empty list):**
+    Validate the main image against the sample(s). Output a brief rationale, then your final line based on whether the main image matches the required elements from the samples.
+
+    Always end with exactly one final line: "Final result: Passed" or "Final result: Failed".
+    Always include a reason explaining your decision.
+  expected_output: |
+    A concise response containing:
+    - A short factual rationale grounded in visible image details.
+    - A reason explaining why the decision was made.
+    - A final line with exactly one of:
+      "Final result: Passed"
+      "Final result: Failed".

@@ -13,7 +13,7 @@ IMAGE_DIR = ROOT_DIR / "tests" / "data" / "images"
 # --------------------------------------------- #
 
 class ImagePaths:
-    MAIN_IMAGE                  = str(IMAGE_DIR / "img.png")
+    MAIN_IMAGE                  = str(IMAGE_DIR / "main.png")
     SAMPLE_IMAGE                = str(IMAGE_DIR / "image01.png")
     CAT_IMAGE                   = str(IMAGE_DIR / "cat.jpg")
     IR_IMAGE                    = str(IMAGE_DIR / "ir_list_view.png")
