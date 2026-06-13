@@ -1,0 +1,66 @@
+generate_agent_md:
+  agent: agent_md_author
+  description: |
+    Generate a CLAUDE.md file for a custom Claude Code **agent** using the details below.
+    - Name: {name}
+    - Purpose: {purpose}
+    - Tools it uses: {tools}
+    - Extra context: {context}
+
+    Requirements:
+    - Use clear markdown headers.
+    - Every section must contain real, specific content — no placeholders.
+    - Constraints section must list hard rules the agent must always follow.
+  expected_output: |
+    A complete CLAUDE.md markdown string with these sections:
+    # {name}
+    ## Purpose
+    ## Role / Goal / Backstory
+    ## Tools
+    ## Inputs
+    ## Outputs
+    ## Constraints
+
+generate_skill_md:
+  agent: skill_md_author
+  context: [generate_agent_md]
+  description: |
+    Generate a CLAUDE.md (SKILL.md) file for a custom Claude Code **skill** using the details below.
+    - Name: {name}
+    - Purpose: {purpose}
+    - Trigger phrase/command: {trigger}
+    - Extra context: {context}
+
+    Requirements:
+    - The Trigger section must show the exact string or pattern that invokes the skill.
+    - Behavior section must be numbered steps.
+    - No placeholder text anywhere.
+  expected_output: |
+    A complete SKILL.md markdown string with these sections:
+    # {name}
+    ## Purpose
+    ## Trigger
+    ## Behavior
+    ## Inputs
+    ## Outputs
+    ## Constraints
+
+generate_commands:
+  agent: commands_author
+  context: [generate_agent_md, generate_skill_md]
+  description: |
+    Generate a commands reference file for the agent and skill documented in previous tasks.
+    - Name: {name}
+    - Extra context: {context}
+
+    Requirements:
+    - List every slash command the agent/skill exposes.
+    - For each command include: syntax, arguments (name, type, required/optional, description), a one-line description, and a usage example.
+    - Format as a markdown table or definition list — whichever is more scannable.
+    - Include a Quick Start section at the top with the most common command.
+  expected_output: |
+    A complete COMMANDS.md markdown string with these sections:
+    # {name} — Commands Reference
+    ## Quick Start
+    ## Commands
+    (one entry per command with Syntax / Arguments / Description / Example)
