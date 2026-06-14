@@ -7,6 +7,9 @@ from backend.ai.agents.pipeline_agent.schemas import PipelineInput, PipelineOutp
 @CrewBase
 class PipelineAgent(AgentInfrastructure):
 
+    def __init__(self, schema: PipelineInput) -> None:
+        self.schema = schema
+
     @agent
     def agent_md_author(self) -> Agent:
         return Agent(config=self.agents_config['agent_md_author'], llm=self.llm)
@@ -21,15 +24,15 @@ class PipelineAgent(AgentInfrastructure):
 
     @task
     def generate_agent_md(self) -> Task:
-        return Task(config=self.tasks_config['generate_agent_md'], output_file='.claude/agents/AGENT.md')
+        return Task(config=self.tasks_config['generate_agent_md'], output_file=f'.claude/agents/{self.schema.agent_name}.md')
 
     @task
     def generate_skill_md(self) -> Task:
-        return Task(config=self.tasks_config['generate_skill_md'], output_file='.claude/skills/SKILL.md')
+        return Task(config=self.tasks_config['generate_skill_md'], output_file=f'.claude/skills/{self.schema.skill_name}.md')
 
     @task
     def generate_commands(self) -> Task:
-        return Task(config=self.tasks_config['generate_commands'], output_file='.claude/commands/COMMAND.md')
+        return Task(config=self.tasks_config['generate_commands'], output_file=f'.claude/commands/{self.schema.command_name}.md')
 
     @crew
     def crew(self) -> Crew:
