@@ -1,0 +1,120 @@
+generate_agent_md:
+  agent: agent_md_author
+  description: |
+    Write a Claude Code agent markdown file for the agent described below.
+
+    Name:            {name}
+    Purpose:         {purpose}
+    Tools available: {tools}
+    Part of workflow: {workflow}
+    Extra context:   {context}
+
+    Requirements:
+    - Every section must contain real, specific content — no placeholders.
+    - The Role must be a concrete job title (e.g. "Security Auditor", not "Agent").
+    - The Goal must be a single, measurable sentence.
+    - Tools section must describe each tool: what it does and when the agent calls it.
+    - Inputs section must be a table with name, type, required/optional, and description.
+    - Outputs section must list every artifact with its path and format.
+    - Constraints must be numbered hard rules using "never" / "always" language.
+  expected_output: |
+    A complete agent markdown file with these exact sections:
+    # {name}
+    ## Purpose
+    ## Role / Goal
+    ## Tools
+    ## Inputs
+    ## Behavior
+    ## Outputs
+    ## Constraints
+
+generate_skill_md:
+  agent: skill_md_author
+  context: [generate_agent_md]
+  description: |
+    Write a Claude Code skill markdown file for the skill described below.
+
+    Name:            {name}
+    Purpose:         {purpose}
+    Trigger:         {trigger}
+    Part of workflow: {workflow}
+    Extra context:   {context}
+
+    Requirements:
+    - The Trigger section must show the exact invocation string.
+    - "What This Skill Injects" must list every rule, standard, or methodology that becomes
+      active after the skill loads — organized by category.
+    - Behavior section must be numbered steps describing what Claude does after loading.
+    - Scope section must explicitly state what the skill governs and what it does NOT govern.
+    - No placeholder text anywhere — every line is specific to this skill's domain.
+  expected_output: |
+    A complete skill markdown file with these exact sections:
+    # {name}
+    ## Purpose
+    ## Trigger
+    ## What This Skill Injects
+    ## Behavior After Loading
+    ## Scope
+    ## Constraints
+
+generate_commands:
+  agent: commands_author
+  context: [generate_agent_md, generate_skill_md]
+  description: |
+    Write a Claude Code command file that orchestrates multiple agents and skills.
+
+    Command name:     {name}
+    Purpose:          {purpose}
+    Trigger:          {trigger}
+    Skills to invoke: {related_skills}
+    Agents to spawn:  {related_agents}
+    Workflow:         {workflow}
+    Extra context:    {context}
+
+    The command must follow a strict 4-phase orchestration pattern:
+
+    Phase 1 — Load skills (inline context injection)
+      For each skill in "{related_skills}":
+      - Name the skill
+      - State exactly what rules or methodology it injects into the current session
+      - Skills run in the CURRENT Claude instance, not in isolation
+
+    Phase 2 — Parallel agents
+      For each agent in "{related_agents}" that is INDEPENDENT of the others:
+      - Name the agent
+      - State its single responsibility
+      - State its expected output artifact (path and format)
+      - Mark it run_in_background: true
+      Agents run as ISOLATED Claude instances via the Agent tool.
+
+    Phase 3 — Sequential agents
+      For agents that DEPEND on Phase 2 results:
+      - Name the agent
+      - State what Phase 2 output it consumes
+      - State what it produces
+
+    Phase 4 — Synthesize
+      - How to aggregate outputs from all agents
+      - Where the final artifact is written
+      - The exact console summary format to print
+
+    Additional requirements:
+    - Include a Skills Used table (skill, what it injects, phase)
+    - Include an Agents Used table (agent file, role, phase, parallel yes/no)
+    - Include a Constraints section with hard rules (no fabrication, output dir only, etc.)
+    - Every agent and skill listed must have a concrete responsibility — no vague descriptions
+    - No placeholder text anywhere
+  expected_output: |
+    A complete command markdown file with these exact sections:
+    # {name}
+    ## Overview
+    ## Arguments
+    ## Workflow
+    ### Phase 1 — Load skills
+    ### Phase 2 — Parallel agents
+    ### Phase 3 — Sequential agents
+    ### Phase 4 — Synthesize
+    ## Outputs
+    ## Skills Used
+    ## Agents Used
+    ## Constraints

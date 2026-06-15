@@ -27,5 +27,9 @@ async def vision_http(prompt: str, image: UploadFile = File(...), sample_image: 
     return _run_vision(prompt=prompt, image=b64, sample_image=sample_image)
 
 
+@app.post(f'/api/{Config.API_VERSION}/pipeline')
+async def pipeline(task: str) -> None:
+    return
+
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=7000)
