@@ -28,7 +28,7 @@ class VisionFlow(Flow[ContentState]):
         return self.state.cache
 
     @router(run_vision_agent)
-    def evaluate_confidence(self) -> str:
+    def evaluation_decision_point(self) -> str:
         confidence = self.state.cache["final_decision"]["confidence_level"]
         if confidence >= MIN_CONFIDENCE:
             return "Success"
@@ -55,13 +55,13 @@ class VisionFlow(Flow[ContentState]):
 
     @router(on_retry)
     def evaluate_retry(self) -> str:
-        return self.evaluate_confidence()
+        return self.evaluation_decision_point()
 
 
 if __name__ == '__main__':
     import json
     result = VisionFlow().kickoff(inputs={
-        'prompt': 'is playwright displayed',
-        'image_path': r'C:\Users\medvi\OneDrive\Desktop\bini-ai\data\images\main.png',
+        'prompt': 'is playwright displayed?',
+        'image_path': r'/Users/medvijenia/dev/bini-ai/data/images/main.png',
     })
     print(json.dumps(result, indent=4))
