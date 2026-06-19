@@ -1,9 +1,14 @@
 from dataclasses import dataclass
-from functools import cached_property
-from crewai import LLM
-from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from backend.paths import ROOT_DIR
+from crewai import Agent, LLM
+from functools import cached_property
+from typing import Generic, TypeVar, Optional, Type
+from pydantic import BaseModel, Field, ConfigDict
+from utils.infrastructure import AgentInfrastructure
+
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class Settings(BaseSettings):
@@ -34,8 +39,6 @@ Config = Settings()
 # --------------------------------------------------------- #
 #          LLM factory for different AI models              #
 # --------------------------------------------------------- #
-
-
 @dataclass
 class LLMFactory:
 
@@ -44,6 +47,31 @@ class LLMFactory:
     @cached_property
     def llm(self) -> LLM:
         return LLM(model="anthropic/claude-sonnet-4-6", api_key=Config.ANTHROPIC_API_KEY)
+
+
+class AgentConfigSchema(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    role:        str   = Field(...,                                               description='agent role title')
+    goal:        str   = Field(...,                                               description='what the agent is trying to achieve')
+    backstory:   str   = Field(...,                                               description='agent persona and background context')
+    temperature: float = Field(0.0,                                               description='LLM sampling temperature; 0.0 = deterministic')
+    verbose:     bool  = Field(True,                                              description='enable CrewAI step-by-step logging')
+    llm:         LLM   = Field(default_factory=lambda: AgentInfrastructure().llm, description='LLM instance used by the agent')
+
+
+class SingleAgent(Generic[T]):
+
+    def __init__(self, config: AgentConfigSchema) -> None:
+        self.config = config
+
+    @cached_property
+    def agent(self) -> Agent:
+        return Agent(**self.config.model_dump(exclude={'llm'}), llm=self.config.llm)
+
+    def run(self, prompt: str, output_model: Optional[Type[T]] = None) -> str | dict:
+        if output_model:
+            return self.agent.kickoff(messages=prompt, response_format=output_model).pydantic.model_dump()
+        return self.agent.kickoff(messages=prompt).raw
 
 
 TestConfig = TestSettings()
