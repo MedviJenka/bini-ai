@@ -21,4 +21,5 @@ dependencies = [
     "aiohttp",
     "aiofiles",
     "logfire",
+    "pydantic-settings>=2.10.1",
 ]
