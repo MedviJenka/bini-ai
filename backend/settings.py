@@ -12,6 +12,7 @@ T = TypeVar("T", bound=BaseModel)
 
 infra = AgentInfrastructure()
 
+
 class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=(".env"), extra="ignore")
@@ -74,21 +75,21 @@ class SingleAgent(Generic[T]):
         return self.agent.kickoff(messages=prompt).raw
 
 
+TestConfig = TestSettings()
+
+
 # -------------------------------- #
 #    Single Agent Flow Example     #
 # -------------------------------- #
 
+# agent_1 = SingleAgent(config=AgentConfigSchema(role='funny agent', goal='funny goal', backstory='funny', verbose=True))
+#
+# agent_2 = SingleAgent(config=AgentConfigSchema(role='evaluator agent', goal='decision', backstory='judge', verbose=True))
+#
+#
 # class Schema(BaseModel):
 #     score: float = Field(..., description='joke score', ge=0.0, le=1.0)
 #     why:   str   = Field(..., description='why the joke got its score')
-#
-#
-# agent_1 = SingleAgent(config=AgentConfigSchema(role='funny agent', goal='funny goal', backstory='funny'))
-# agent_2 = SingleAgent(config=AgentConfigSchema(role='evaluator agent', goal='decision', backstory='judge'))
-#
-# from crewai import Flow
-# from crewai.flow import start, listen, router
-#
 #
 # class State(BaseModel):
 #     prompt:     str  = Field('', description='prompt for the agent')
@@ -113,14 +114,12 @@ class SingleAgent(Generic[T]):
 #         return 'not funny' if self.state.dict_cache['score'] < 0.5 else 'funny'
 #
 #     @listen('not funny')
-#     def not_funny(self) -> str:
-#         return 'not funny'
+#     def on_funny(self) -> None:
+#         print('not funny')
 #
 #     @listen('funny')
-#     def funny(self) -> str:
-#         return 'funny'
+#     def on_not_funny(self) -> None:
+#         print('funny')
 #
 #
-# print(FlowTest().kickoff({'prompt': 'tell me a joke'}))
-
-TestConfig = TestSettings()
+# FlowTest().kickoff({'prompt': 'tell me a joke'})
