@@ -10,6 +10,7 @@ from utils.infrastructure import AgentInfrastructure
 
 T = TypeVar("T", bound=BaseModel)
 
+infra = AgentInfrastructure()
 
 class Settings(BaseSettings):
 
@@ -49,9 +50,6 @@ class LLMFactory:
         return LLM(model="anthropic/claude-sonnet-4-6", api_key=Config.ANTHROPIC_API_KEY)
 
 
-_infra = AgentInfrastructure()
-
-
 class AgentConfigSchema(BaseModel):
     role:        str   = Field(...,  description='agent role title')
     goal:        str   = Field(...,  description='what the agent is trying to achieve')
@@ -64,16 +62,65 @@ class SingleAgent(Generic[T]):
 
     def __init__(self, config: AgentConfigSchema, llm: Optional[LLM] = None) -> None:
         self.config = config
-        self.llm = llm or _infra.llm
+        self.llm = llm or infra.llm
 
     @cached_property
     def agent(self) -> Agent:
         return Agent(**self.config.model_dump(), llm=self.llm)
 
-    def run(self, prompt: str, output_model: Optional[Type[T]] = None) -> str | dict:
-        if output_model:
-            return self.agent.kickoff(messages=prompt, response_format=output_model).pydantic.model_dump()
+    def run(self, prompt: str, schema: Optional[Type[T]] = None) -> str | dict:
+        if schema:
+            return self.agent.kickoff(messages=prompt, response_format=schema).pydantic.model_dump()
         return self.agent.kickoff(messages=prompt).raw
 
+
+# -------------------------------- #
+#    Single Agent Flow Example     #
+# -------------------------------- #
+
+# class Schema(BaseModel):
+#     score: float = Field(..., description='joke score', ge=0.0, le=1.0)
+#     why:   str   = Field(..., description='why the joke got its score')
+#
+#
+# agent_1 = SingleAgent(config=AgentConfigSchema(role='funny agent', goal='funny goal', backstory='funny'))
+# agent_2 = SingleAgent(config=AgentConfigSchema(role='evaluator agent', goal='decision', backstory='judge'))
+#
+# from crewai import Flow
+# from crewai.flow import start, listen, router
+#
+#
+# class State(BaseModel):
+#     prompt:     str  = Field('', description='prompt for the agent')
+#     cache:      str  = Field('', description='cache for the agent')
+#     dict_cache: dict = Field(default_factory=dict)
+#
+#
+# class FlowTest(Flow[State]):
+#
+#     @start()
+#     def run_1(self) -> str:
+#         self.state.cache = agent_1.run(prompt=self.state.prompt)
+#         return self.state.cache
+#
+#     @listen(run_1)
+#     def run_2(self) -> dict:
+#         self.state.dict_cache = agent_2.run(prompt=self.state.cache, schema=Schema)
+#         return self.state.dict_cache
+#
+#     @router(run_2)
+#     def decision_point(self) -> str:
+#         return 'not funny' if self.state.dict_cache['score'] < 0.5 else 'funny'
+#
+#     @listen('not funny')
+#     def not_funny(self) -> str:
+#         return 'not funny'
+#
+#     @listen('funny')
+#     def funny(self) -> str:
+#         return 'funny'
+#
+#
+# print(FlowTest().kickoff({'prompt': 'tell me a joke'}))
 
 TestConfig = TestSettings()
