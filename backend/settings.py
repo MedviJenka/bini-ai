@@ -4,7 +4,7 @@ from backend.paths import ROOT_DIR
 from crewai import Agent, LLM
 from functools import cached_property
 from typing import Generic, TypeVar, Optional, Type
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 from utils.infrastructure import AgentInfrastructure
 
 
@@ -49,24 +49,26 @@ class LLMFactory:
         return LLM(model="anthropic/claude-sonnet-4-6", api_key=Config.ANTHROPIC_API_KEY)
 
 
+_infra = AgentInfrastructure()
+
+
 class AgentConfigSchema(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    role:        str   = Field(...,                                               description='agent role title')
-    goal:        str   = Field(...,                                               description='what the agent is trying to achieve')
-    backstory:   str   = Field(...,                                               description='agent persona and background context')
-    temperature: float = Field(0.0,                                               description='LLM sampling temperature; 0.0 = deterministic')
-    verbose:     bool  = Field(True,                                              description='enable CrewAI step-by-step logging')
-    llm:         LLM   = Field(default_factory=lambda: AgentInfrastructure().llm, description='LLM instance used by the agent')
+    role:        str   = Field(...,  description='agent role title')
+    goal:        str   = Field(...,  description='what the agent is trying to achieve')
+    backstory:   str   = Field(...,  description='agent persona and background context')
+    temperature: float = Field(0.0,  description='LLM sampling temperature; 0.0 = deterministic')
+    verbose:     bool  = Field(True, description='enable CrewAI step-by-step logging')
 
 
 class SingleAgent(Generic[T]):
 
-    def __init__(self, config: AgentConfigSchema) -> None:
+    def __init__(self, config: AgentConfigSchema, llm: Optional[LLM] = None) -> None:
         self.config = config
+        self.llm = llm or _infra.llm
 
     @cached_property
     def agent(self) -> Agent:
-        return Agent(**self.config.model_dump(exclude={'llm'}), llm=self.config.llm)
+        return Agent(**self.config.model_dump(), llm=self.llm)
 
     def run(self, prompt: str, output_model: Optional[Type[T]] = None) -> str | dict:
         if output_model:
