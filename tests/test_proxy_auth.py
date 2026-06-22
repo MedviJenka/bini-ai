@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
 from httpx import AsyncClient, ASGITransport
 
 VALID_TOKEN = "test-secret-token"
@@ -56,7 +55,6 @@ def _patch_config(**overrides):
 # ---------------------------------------------------------------------------
 
 class TestAuthPositive:
-    @pytest.mark.asyncio
     async def test_valid_bearer_token_accepted(self):
         """Correct Bearer token receives 200."""
         from services.claude_proxy import app
@@ -72,7 +70,6 @@ class TestAuthPositive:
 
         assert resp.status_code == 200
 
-    @pytest.mark.asyncio
     async def test_health_endpoint_skips_auth(self):
         """GET /health is accessible without any Authorization header."""
         from services.claude_proxy import app
@@ -86,7 +83,6 @@ class TestAuthPositive:
         assert resp.status_code == 200
         assert resp.json() == {"status": "ok"}
 
-    @pytest.mark.asyncio
     async def test_health_endpoint_ignores_wrong_token(self):
         """GET /health succeeds even if a wrong token is supplied."""
         from services.claude_proxy import app
@@ -107,7 +103,6 @@ class TestAuthPositive:
 # ---------------------------------------------------------------------------
 
 class TestAuthNegative:
-    @pytest.mark.asyncio
     async def test_missing_authorization_header_returns_401(self):
         """No Authorization header → 401."""
         from services.claude_proxy import app
@@ -121,7 +116,6 @@ class TestAuthNegative:
 
         assert resp.status_code == 401
 
-    @pytest.mark.asyncio
     async def test_wrong_token_returns_401(self):
         """Incorrect Bearer token value → 401."""
         from services.claude_proxy import app
@@ -136,7 +130,6 @@ class TestAuthNegative:
 
         assert resp.status_code == 401
 
-    @pytest.mark.asyncio
     async def test_empty_bearer_token_returns_401(self):
         """Authorization: Bearer <empty> → 401."""
         from services.claude_proxy import app
@@ -151,7 +144,6 @@ class TestAuthNegative:
 
         assert resp.status_code == 401
 
-    @pytest.mark.asyncio
     async def test_non_bearer_scheme_returns_401(self):
         """Authorization: Basic <token> → 401."""
         from services.claude_proxy import app
@@ -166,7 +158,6 @@ class TestAuthNegative:
 
         assert resp.status_code == 401
 
-    @pytest.mark.asyncio
     async def test_models_endpoint_requires_auth(self):
         """GET /v1/models also requires valid Bearer token."""
         from services.claude_proxy import app
@@ -180,7 +171,6 @@ class TestAuthNegative:
 
         assert resp.status_code == 401
 
-    @pytest.mark.asyncio
     async def test_models_endpoint_returns_allowlist_with_valid_token(self):
         """GET /v1/models returns all allowed models when authenticated."""
         from services.claude_proxy import app

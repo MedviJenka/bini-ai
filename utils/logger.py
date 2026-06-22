@@ -2,7 +2,7 @@ import warnings
 from functools import cached_property
 from dataclasses import dataclass, field
 from logfire import Logfire, configure
-from backend.settings import Config
+from settings import Config
 
 warnings.filterwarnings('ignore')
 

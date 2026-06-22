@@ -84,4 +84,7 @@ temp_*
 
 /frontend/app/node_modules/*
 /tests/results/
-/backend/functions/node_modules/
+/functions/node_modules/
+/img.png
+/img_1.png
+/img_2.png

@@ -1,8 +1,8 @@
-from backend.ai.agents.vision_agent.crew import vision_agent
+from ai.agents.vision_agent.crew import vision_agent
 from pydantic import BaseModel, Field
 from crewai.flow import Flow, listen, start, router
 from typing import Optional, Union
-from backend.utils.logger import Logger
+from utils.logger import Logger
 
 
 log = Logger(name="VisionFlow")

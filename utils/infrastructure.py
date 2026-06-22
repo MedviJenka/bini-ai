@@ -1,8 +1,8 @@
 from crewai import Agent, Task
 from dataclasses import dataclass
 from functools import cached_property
-from backend.settings import LLMFactory
-from backend.utils.logger import Logger
+from settings import LLMFactory
+from utils.logger import Logger
 
 
 log = Logger(name="agent-infra")

@@ -9,7 +9,6 @@ from __future__ import annotations
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
 from httpx import AsyncClient, ASGITransport
 
 VALID_TOKEN = "test-secret-token"
@@ -46,7 +45,6 @@ def _make_client(app) -> AsyncClient:
 
 
 class TestConcurrencyLimiter:
-    @pytest.mark.asyncio
     async def test_within_limit_requests_succeed(self):
         """A single request completes when concurrency is not exhausted."""
         import services.claude_proxy as proxy_module
@@ -68,7 +66,6 @@ class TestConcurrencyLimiter:
 
         assert resp.status_code == 200
 
-    @pytest.mark.asyncio
     async def test_exceeding_concurrency_returns_429(self):
         """When all semaphore slots are taken, the next request gets 429."""
         import services.claude_proxy as proxy_module
@@ -87,7 +84,6 @@ class TestConcurrencyLimiter:
         # Restore for other tests
         proxy_module._semaphore = None
 
-    @pytest.mark.asyncio
     async def test_concurrent_requests_within_limit_all_succeed(self):
         """Multiple concurrent requests within the limit all complete 200."""
         import services.claude_proxy as proxy_module

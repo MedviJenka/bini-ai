@@ -1,9 +1,9 @@
 from typing import Union, Optional
 from crewai import Agent, Crew, Task
 from crewai.project import CrewBase, agent, crew, task
-from backend.ai.tools.vision_tool import BiniVisionTool
-from backend.utils.infrastructure import AgentInfrastructure
-from backend.ai.agents.vision_agent.schemas import VisionSchema
+from ai.tools.vision_tool import BiniVisionTool
+from utils.infrastructure import AgentInfrastructure
+from ai.agents.vision_agent.schemas import VisionSchema
 
 
 @CrewBase
@@ -11,7 +11,7 @@ class ComputerVisionAgent(AgentInfrastructure):
 
     @agent
     def image_analysis_agent(self) -> Agent:
-        return Agent(config=self.agents_config['image_analysis_agent'], llm=self.llm)
+        return Agent(config=self.agents_config['image_analysis_agent'], tools=[BiniVisionTool(llm=self.llm)], llm=self.llm)
 
     @agent
     def decision_agent(self) -> Agent:
@@ -19,7 +19,7 @@ class ComputerVisionAgent(AgentInfrastructure):
 
     @task
     def extract_visual_data(self, **kwargs) -> Task:
-        return Task(config=self.tasks_config['extract_visual_data'], tools=[BiniVisionTool(llm=self.llm)], **kwargs)
+        return Task(config=self.tasks_config['extract_visual_data'], **kwargs)
 
     @task
     def validate_requirements(self, **kwargs) -> Task:
@@ -37,6 +37,7 @@ def vision_agent(prompt: str, image_path: str, sample_image: Optional[Union[list
 
 
 if __name__ == '__main__':
-    a = vision_agent(prompt='is playwright displayed', image_path=r'/Users/medvijenia/dev/bini-ai/data/images/main.png')
+    a = vision_agent(prompt='is playwright displayed', image_path=r'/data/images/main.png')
     import json
     print(json.dumps(a, indent=4))
+    print(type(a))

@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     CLAUDE_PROXY_MAX_CONCURRENCY:   int = Field(default=4)
     CLAUDE_PROXY_TIMEOUT:           int = Field(default=300)
     CLAUDE_PROXY_MODEL_ALLOWLIST:   str = Field(default="claude-sonnet-4-6,claude-opus-4-6,claude-haiku-4-6")
+    LLM_API_KEY:                    str = Field(default="claude-sonnet-4-6,claude-opus-4-6,claude-haiku-4-6")
+    OPENAI_API_KEY:                 str = Field(...)
 
     class Paths:
         LOGS = str(ROOT_DIR / "logs")

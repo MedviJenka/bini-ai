@@ -1,5 +1,5 @@
 import pytest
-from backend.functions.common import BiniMCPClient
+from functions.common import BiniMCPClient
 
 
 @pytest.fixture(scope="session")

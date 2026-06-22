@@ -3,8 +3,8 @@ import base64
 import tempfile
 from typing import Optional
 from fastmcp import FastMCP
-from backend.utils.logger import Logger
-from backend.ai.agents.vision_agent.crew import vision_agent
+from utils.logger import Logger
+from ai.agents.vision_agent.crew import vision_agent
 from fastmcp.apps.file_upload import FileUpload
 
 

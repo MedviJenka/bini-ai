@@ -4,7 +4,7 @@ import requests
 from pathlib import Path
 from typing import Optional
 from dataclasses import dataclass, field
-from backend.utils.logger import Logger
+from utils.logger import Logger
 
 
 log = Logger(name='vision-mcp-function')
